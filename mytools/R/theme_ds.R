@@ -21,11 +21,6 @@
 #'   geom_point() +
 #'   theme_ds()
 #'
-#' # Setting font size and font family
-#' ggplot(mtcars, aes(x = mpg, y = wt)) +
-#'   geom_point() +
-#'   theme_ds(base_size = 14, base_family = "Arial")
-#'
 #' @export
 theme_ds <- function(base_size = 11, base_family = ""){
 
