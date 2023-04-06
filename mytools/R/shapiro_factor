@@ -1,0 +1,44 @@
+#' Shapiro-Wilk Normality Test by Group
+#'
+#' Performs a Shapiro-Wilk normality test for each group in a given data set and generates QQ plots for each group.
+#'
+#' @param data A data frame containing the variables to be tested.
+#' @param factor_var The name of the variable indicating the grouping factor.
+#' @param num_var The name of the numeric variable to be tested for normality.
+#'
+#' @return A data frame with the results of the Shapiro-Wilk test for each group, including the test statistic, p-value, and whether the data appears to be normally distributed or not.
+#'
+#' @details This function performs a Shapiro-Wilk normality test for the numeric variable specified in \code{num_var} for each group defined by the grouping factor specified in \code{factor_var}. It generates QQ plots for each group, comparing the distribution of the data to a normal distribution. The results of the Shapiro-Wilk test for each group are returned in a data frame, along with an indication of whether the data appears to be normally distributed or not.
+#'
+#' @examples
+#' \dontrun{
+#' # Test normality of MPG by number of cylinders in mtcars data set
+#' shapiro_by_group(mtcars, "cyl", "mpg")
+#' }
+#'
+#' @import stats
+#'
+#' @export
+shapiro_by_group <- function(data, factor_var, num_var) {
+  groups <- unique(data[, factor_var])
+  results <- data.frame(Group = character(), W = numeric(), p.value = numeric(), Normal = character(), stringsAsFactors = FALSE)
+  
+  # Set up plot layout
+  par(mfrow=c(2, 2))
+  
+  for (i in 1:length(groups)) {
+    group_data <- data[data[, factor_var] == groups[i], num_var]
+    shapiro <- shapiro.test(group_data)
+    is_normal <- ifelse(shapiro$p.value >= 0.05, "Sim", "Não")
+    results <- rbind(results, data.frame(Group = groups[i], W = shapiro$statistic, p.value = shapiro$p.value, Normal = is_normal))
+    
+    # Plot QQ plot
+    qqnorm(group_data, pch = 1, frame = FALSE, main = paste("QQ Plot for Group", groups[i]))
+    qqline(group_data, col = "steelblue", lwd = 2)
+  }
+  
+  # Reset plot layout
+  par(mfrow=c(1, 1))
+  
+  return(results)
+}
